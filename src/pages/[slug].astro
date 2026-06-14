@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+  return docs.map((doc) => ({
+    params: { slug: doc.data.slug },
+    props: { doc },
+  }));
+}
+
+const { doc } = Astro.props;
+const { Content } = await render(doc);
+
+const allDocs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
+const currentIndex = allDocs.findIndex((d) => d.data.slug === doc.data.slug);
+const prev = currentIndex > 0 ? allDocs[currentIndex - 1] : null;
+const next = currentIndex < allDocs.length - 1 ? allDocs[currentIndex + 1] : null;
+---
+
+<BaseLayout
+  title={`${doc.data.title} — EXIF Remover`}
+  description={doc.data.description}
+>
+  <article class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-3xl md:text-4xl font-bold mb-6">{doc.data.title}</h1>
+    <div class="prose prose-slate prose-lg max-w-none
+      prose-headings:font-semibold prose-headings:text-[var(--color-text)]
+      prose-a:text-[var(--color-primary)] prose-a:no-underline hover:prose-a:underline
+      prose-code:text-[var(--color-primary)] prose-code:bg-blue-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+      prose-table:border prose-table:border-[var(--color-border)]
+      prose-th:bg-[var(--color-bg-alt)] prose-th:px-3 prose-th:py-2
+      prose-td:px-3 prose-td:py-2 prose-td:border-t prose-td:border-[var(--color-border)]">
+      <Content />
+    </div>
+
+    <div class="mt-10 p-6 bg-[var(--color-bg-alt)] rounded-xl border border-[var(--color-border)] text-center">
+      <p class="text-lg font-medium mb-3">Ready to remove EXIF data from your photos?</p>
+      <a href="/" class="inline-block px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:bg-[var(--color-primary-dark)] transition-colors no-underline">
+        Try Our Free EXIF Remover →
+      </a>
+    </div>
+
+    <nav class="mt-8 flex justify-between text-sm">
+      {prev ? (
+        <a href={`/${prev.data.slug}`} class="text-[var(--color-primary)] hover:underline no-underline">
+          ← {prev.data.title}
+        </a>
+      ) : <span />}
+      {next ? (
+        <a href={`/${next.data.slug}`} class="text-[var(--color-primary)] hover:underline no-underline">
+          {next.data.title} →
+        </a>
+      ) : <span />}
+    </nav>
+  </article>
+</BaseLayout>
