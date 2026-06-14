@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { saveAs } from 'file-saver';
+import pkg from 'file-saver';
+const { saveAs } = pkg;
 import JSZip from 'jszip';
 import type { PhotoItem } from './PhotoGrid';
 
