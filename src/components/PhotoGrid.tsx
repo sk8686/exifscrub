@@ -22,7 +22,7 @@ interface PhotoGridProps {
 
 export default function PhotoGrid({ photos, selectedId, onSelect }: PhotoGridProps) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
       {photos.map((photo) => (
         <PhotoCard
           key={photo.id}
@@ -44,7 +44,7 @@ function PhotoCard({ photo, isSelected, onSelect }: { photo: PhotoItem; isSelect
     <button
       onClick={onSelect}
       className={`
-        relative rounded-lg overflow-hidden border-2 text-left transition-all
+        relative rounded-lg overflow-hidden border-2 text-left transition-all w-full
         ${isSelected ? 'border-[var(--color-primary)] ring-2 ring-blue-200' : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'}
         ${photo.isProcessing ? 'opacity-60' : ''}
       `}

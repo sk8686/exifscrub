@@ -15,9 +15,9 @@ const { currentPath = '/' } = Astro.props;
       </svg>
       <span>EXIF Remover</span>
     </a>
-    <nav class="flex items-center gap-4 text-sm">
-      <a href="/" class:list={["hover:text-[var(--color-primary)] transition-colors", currentPath === '/' && "text-[var(--color-primary)] font-medium"]}>Tool</a>
-      <a href="/what-is-exif-data" class="hover:text-[var(--color-primary)] transition-colors">Learn</a>
+    <nav class="flex items-center gap-1 sm:gap-4 text-sm">
+      <a href="/" class:list={["px-3 py-2 rounded-md hover:text-[var(--color-primary)] transition-colors min-h-[44px] flex items-center", currentPath === '/' && "text-[var(--color-primary)] font-medium"]}>Tool</a>
+      <a href="/what-is-exif-data" class="px-3 py-2 rounded-md hover:text-[var(--color-primary)] transition-colors min-h-[44px] flex items-center">Learn</a>
     </nav>
   </div>
 </header>

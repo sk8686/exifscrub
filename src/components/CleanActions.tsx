@@ -38,12 +38,12 @@ export default function CleanActions({ photos, onCleanSingle, onCleanAll }: Clea
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
       {uncleanedPhotos.length > 1 && (
         <button
           onClick={onCleanAll}
           disabled={isProcessing}
-          className="px-5 py-2.5 bg-[var(--color-primary)] text-white rounded-lg font-medium text-sm hover:bg-[var(--color-primary-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-3 sm:px-5 sm:py-2.5 bg-[var(--color-primary)] text-white rounded-lg font-medium text-sm hover:bg-[var(--color-primary-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
         >
           {isProcessing ? 'Processing...' : `Clean All (${uncleanedPhotos.length})`}
         </button>
@@ -53,7 +53,7 @@ export default function CleanActions({ photos, onCleanSingle, onCleanAll }: Clea
         <button
           onClick={handleDownloadAll}
           disabled={isDownloadingAll}
-          className="px-5 py-2.5 bg-[var(--color-success)] text-white rounded-lg font-medium text-sm hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-3 sm:px-5 sm:py-2.5 bg-[var(--color-success)] text-white rounded-lg font-medium text-sm hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
         >
           {isDownloadingAll
             ? 'Preparing...'

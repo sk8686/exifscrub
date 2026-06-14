@@ -55,7 +55,7 @@ export default function MetaPanel({ photo }: MetaPanelProps) {
       )}
 
       {/* Full metadata table */}
-      <div className="bg-white border border-[var(--color-border)] rounded-xl overflow-hidden">
+      <div className="bg-white border border-[var(--color-border)] rounded-xl overflow-hidden overflow-x-auto">
         <div className="px-4 py-3 bg-[var(--color-bg-alt)] border-b border-[var(--color-border)]">
           <h3 className="text-sm font-semibold">Full Metadata</h3>
         </div>
@@ -67,16 +67,16 @@ export default function MetaPanel({ photo }: MetaPanelProps) {
             return (
               <div
                 key={tag.name}
-                className={`px-4 py-2.5 flex items-start gap-3 text-sm ${
+                className={`px-3 sm:px-4 py-2.5 flex items-start gap-2 sm:gap-3 text-sm ${
                   wasRemoved ? 'bg-red-50/50' : ''
                 }`}
               >
                 <RiskBadge level={tag.riskLevel} compact />
                 <div className="flex-1 min-w-0">
-                  <span className={`font-medium ${wasRemoved ? 'line-through text-red-400' : 'text-[var(--color-text)]'}`}>
+                  <span className={`font-medium break-words ${wasRemoved ? 'line-through text-red-400' : 'text-[var(--color-text)]'}`}>
                     {tag.label}
                   </span>
-                  <span className={`ml-2 ${wasRemoved ? 'line-through text-red-300' : 'text-[var(--color-text-muted)]'}`}>
+                  <span className={`ml-1 sm:ml-2 break-words ${wasRemoved ? 'line-through text-red-300' : 'text-[var(--color-text-muted)]'}`}>
                     {tag.value}
                   </span>
                 </div>

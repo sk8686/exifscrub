@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, type DragEvent } from 'react';
+import { useState, useRef, useCallback, useEffect, type DragEvent } from 'react';
 
 interface DropZoneProps {
   onFilesSelected: (files: File[]) => void;
@@ -76,10 +76,10 @@ export default function DropZone({ onFilesSelected }: DropZoneProps) {
   );
 
   // Register paste listener
-  useState(() => {
+  useEffect(() => {
     document.addEventListener('paste', handlePaste);
     return () => document.removeEventListener('paste', handlePaste);
-  });
+  }, [handlePaste]);
 
   return (
     <div
@@ -88,8 +88,8 @@ export default function DropZone({ onFilesSelected }: DropZoneProps) {
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
       className={`
-        relative cursor-pointer rounded-xl border-2 border-dashed p-8 md:p-12
-        text-center transition-all duration-200
+        relative cursor-pointer rounded-xl border-2 border-dashed p-6 py-10 md:p-12
+        text-center transition-all duration-200 min-h-[180px]
         ${isDragging
           ? 'border-[var(--color-primary)] bg-blue-50'
           : 'border-[var(--color-border)] bg-[var(--color-bg-alt)] hover:border-[var(--color-primary)] hover:bg-blue-50/50'

@@ -23,8 +23,8 @@ const next = currentIndex < allDocs.length - 1 ? allDocs[currentIndex + 1] : nul
   title={`${doc.data.title} — EXIF Remover`}
   description={doc.data.description}
 >
-  <article class="max-w-3xl mx-auto px-4 py-8">
-    <h1 class="text-3xl md:text-4xl font-bold mb-6">{doc.data.title}</h1>
+  <article class="max-w-3xl mx-auto px-4 py-6 sm:py-8">
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">{doc.data.title}</h1>
     <div class="prose prose-slate prose-lg max-w-none
       prose-headings:font-semibold prose-headings:text-[var(--color-text)]
       prose-a:text-[var(--color-primary)] prose-a:no-underline hover:prose-a:underline
@@ -37,19 +37,19 @@ const next = currentIndex < allDocs.length - 1 ? allDocs[currentIndex + 1] : nul
 
     <div class="mt-10 p-6 bg-[var(--color-bg-alt)] rounded-xl border border-[var(--color-border)] text-center">
       <p class="text-lg font-medium mb-3">Ready to remove EXIF data from your photos?</p>
-      <a href="/" class="inline-block px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:bg-[var(--color-primary-dark)] transition-colors no-underline">
+      <a href="/" class="inline-block px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:bg-[var(--color-primary-dark)] transition-colors no-underline min-h-[44px]">
         Try Our Free EXIF Remover →
       </a>
     </div>
 
-    <nav class="mt-8 flex justify-between text-sm">
+    <nav class="mt-8 flex flex-col sm:flex-row justify-between gap-3 text-sm">
       {prev ? (
-        <a href={`/${prev.data.slug}`} class="text-[var(--color-primary)] hover:underline no-underline">
+        <a href={`/${prev.data.slug}`} class="text-[var(--color-primary)] hover:underline no-underline px-2 py-2 min-h-[44px] flex items-center">
           ← {prev.data.title}
         </a>
       ) : <span />}
       {next ? (
-        <a href={`/${next.data.slug}`} class="text-[var(--color-primary)] hover:underline no-underline">
+        <a href={`/${next.data.slug}`} class="text-[var(--color-primary)] hover:underline no-underline px-2 py-2 min-h-[44px] flex items-center sm:justify-end">
           {next.data.title} →
         </a>
       ) : <span />}
