@@ -1,17 +1,18 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+  title="Free EXIF Remover — Remove Photo Metadata Online"
+  description="Remove EXIF metadata from photos — GPS location, camera info, timestamps. 100% local processing, files never leave your browser. Free, no signup required."
+>
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">Remove EXIF Metadata from Photos</h1>
+      <p class="text-[var(--color-text-muted)] text-lg">100% local processing — your files never leave your device</p>
+    </div>
+    <div class="bg-[var(--color-bg-alt)] rounded-xl border-2 border-dashed border-[var(--color-border)] p-12 text-center">
+      <p class="text-[var(--color-text-muted)]">Tool will be built here</p>
+    </div>
+  </div>
+</BaseLayout>

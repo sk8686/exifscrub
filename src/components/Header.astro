@@ -1,0 +1,23 @@
+---
+interface Props {
+  currentPath?: string;
+}
+const { currentPath = '/' } = Astro.props;
+---
+
+<header class="border-b border-[var(--color-border)] bg-white sticky top-0 z-50">
+  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 text-lg font-bold text-[var(--color-primary)] no-underline">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="w-7 h-7">
+        <rect width="32" height="32" rx="6" fill="#2563EB"/>
+        <path d="M16 6L8 12v10h16V12L16 6z" fill="none" stroke="white" stroke-width="2"/>
+        <circle cx="16" cy="17" r="3" fill="white"/>
+      </svg>
+      <span>EXIF Remover</span>
+    </a>
+    <nav class="flex items-center gap-4 text-sm">
+      <a href="/" class:list={["hover:text-[var(--color-primary)] transition-colors", currentPath === '/' && "text-[var(--color-primary)] font-medium"]}>Tool</a>
+      <a href="/what-is-exif-data" class="hover:text-[var(--color-primary)] transition-colors">Learn</a>
+    </nav>
+  </div>
+</header>
