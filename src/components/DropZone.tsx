@@ -101,7 +101,7 @@ export default function DropZone({ onFilesSelected }: DropZoneProps) {
         type="file"
         accept=".jpg,.jpeg,.png,.webp,.heic,.heif"
         multiple
-        className="hidden"
+        className="sr-only"
         onChange={(e) => handleFiles(e.target.files)}
       />
 

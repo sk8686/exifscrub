@@ -39,13 +39,13 @@ export default function CleanActions({ photos, onCleanSingle, onCleanAll }: Clea
 
   return (
     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-      {uncleanedPhotos.length > 1 && (
+      {uncleanedPhotos.length >= 1 && (
         <button
-          onClick={onCleanAll}
+          onClick={() => onCleanSingle(uncleanedPhotos[0].id)}
           disabled={isProcessing}
           className="px-4 py-3 sm:px-5 sm:py-2.5 bg-[var(--color-primary)] text-white rounded-lg font-medium text-sm hover:bg-[var(--color-primary-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
         >
-          {isProcessing ? 'Processing...' : `Clean All (${uncleanedPhotos.length})`}
+          {isProcessing ? 'Processing...' : uncleanedPhotos.length === 1 ? 'Clean Photo' : `Clean All (${uncleanedPhotos.length})`}
         </button>
       )}
 

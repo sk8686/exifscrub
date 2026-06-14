@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import DropZone from './DropZone';
 import PhotoGrid, { type PhotoItem } from './PhotoGrid';
 import MetaPanel from './MetaPanel';
@@ -9,6 +9,8 @@ import { cleanFile } from '../lib/exif-cleaner';
 export default function ExifRemover() {
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const photosRef = useRef(photos);
+  photosRef.current = photos;
 
   const selectedPhoto = photos.find((p) => p.id === selectedId) ?? null;
 
@@ -26,34 +28,40 @@ export default function ExifRemover() {
       isCleaned: false,
     }));
 
-    setPhotos((prev) => [...prev, ...newPhotos]);
+    setPhotos((prev) => {
+      const updated = [...prev, ...newPhotos];
+      photosRef.current = updated;
+      return updated;
+    });
 
-    if (newPhotos.length > 0 && !selectedId) {
-      setSelectedId(newPhotos[0].id);
-    }
+    setSelectedId((prev) => prev ?? newPhotos[0]?.id ?? null);
 
     for (const photo of newPhotos) {
       const exifData = await readExif(photo.file);
-      setPhotos((prev) =>
-        prev.map((p) =>
+      setPhotos((prev) => {
+        const updated = prev.map((p) =>
           p.id === photo.id ? { ...p, exifData, isProcessing: false } : p
-        )
-      );
+        );
+        photosRef.current = updated;
+        return updated;
+      });
     }
-  }, [selectedId]);
+  }, []);
 
   const handleCleanSingle = useCallback(async (id: string) => {
-    const photo = photos.find((p) => p.id === id);
+    const photo = photosRef.current.find((p) => p.id === id);
     if (!photo || photo.isProcessing || photo.isCleaned) return;
 
-    setPhotos((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, isProcessing: true } : p))
-    );
+    setPhotos((prev) => {
+      const updated = prev.map((p) => (p.id === id ? { ...p, isProcessing: true } : p));
+      photosRef.current = updated;
+      return updated;
+    });
 
     try {
       const result = await cleanFile(photo.file);
-      setPhotos((prev) =>
-        prev.map((p) =>
+      setPhotos((prev) => {
+        const updated = prev.map((p) =>
           p.id === id
             ? {
                 ...p,
@@ -64,34 +72,30 @@ export default function ExifRemover() {
                 isCleaned: true,
               }
             : p
-        )
-      );
+        );
+        photosRef.current = updated;
+        return updated;
+      });
     } catch {
-      setPhotos((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, isProcessing: false } : p))
-      );
+      setPhotos((prev) => {
+        const updated = prev.map((p) => (p.id === id ? { ...p, isProcessing: false } : p));
+        photosRef.current = updated;
+        return updated;
+      });
     }
-  }, [photos]);
+  }, []);
 
   const handleCleanAll = useCallback(async () => {
-    const uncleaned = photos.filter((p) => !p.isCleaned && !p.isProcessing);
+    const uncleaned = photosRef.current.filter((p) => !p.isCleaned && !p.isProcessing);
     for (const photo of uncleaned) {
       await handleCleanSingle(photo.id);
     }
-  }, [photos, handleCleanSingle]);
+  }, [handleCleanSingle]);
 
   const hasPhotos = photos.length > 0;
 
   return (
     <div className="space-y-6">
-      {/* Trust banner */}
-      <div className="flex items-center justify-center gap-2 text-sm text-[var(--color-primary)] font-medium text-center">
-        <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-        <span>100% local processing — your files never leave your device</span>
-      </div>
-
       {/* Drop zone */}
       <DropZone onFilesSelected={handleFilesSelected} />
 
