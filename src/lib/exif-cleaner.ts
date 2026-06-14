@@ -74,7 +74,7 @@ export async function cleanFile(file: File): Promise<CleanResult> {
     processedFile = await convertHeicToJpeg(file);
   }
 
-  const originalExif = await readExif(processedFile);
+  await readExif(processedFile); // validate file is readable
 
   const cleanedFile = await removeExifViaCanvas(processedFile);
 
