@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getTranslations } from '../i18n/utils';
+
+const t = getTranslations('en');
+const p = t.privacyPage;
+---
+
+<BaseLayout
+  title={`${p.title} — ${t.site.title}`}
+  description={p.intro}
+  lang="en"
+>
+  <article class="max-w-3xl mx-auto px-4 py-6 sm:py-8">
+    <nav class="text-sm text-[var(--color-text-muted)] mb-4 flex items-center gap-1.5" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-[var(--color-primary)] transition-colors no-underline text-[var(--color-text-muted)]">{t.breadcrumb.home}</a>
+      <span>/</span>
+      <span class="text-[var(--color-text)]">{p.title}</span>
+    </nav>
+
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">{p.title}</h1>
+    <p class="text-sm text-[var(--color-text-muted)] mb-8">{p.lastUpdated}</p>
+
+    <div class="prose prose-slate prose-lg max-w-none
+      prose-headings:font-semibold prose-headings:text-[var(--color-text)]
+      prose-a:text-[var(--color-primary)] prose-a:no-underline hover:prose-a:underline">
+      <p>{p.intro}</p>
+
+      <h2>{p.localTitle}</h2>
+      <p>{p.localP1}</p>
+      <p>{p.localP2}</p>
+
+      <h2>{p.dataTitle}</h2>
+      <p>{p.dataP1}</p>
+      <p>{p.dataP2}</p>
+
+      <h2>{p.cookiesTitle}</h2>
+      <p>{p.cookiesP1}</p>
+
+      <h2>{p.thirdPartyTitle}</h2>
+      <p>{p.thirdPartyP1}</p>
+      <p>{p.thirdPartyP2}</p>
+
+      <h2>{p.childrenTitle}</h2>
+      <p>{p.childrenP1}</p>
+
+      <h2>{p.changesTitle}</h2>
+      <p>{p.changesP1}</p>
+
+      <h2>{p.contactTitle}</h2>
+      <p>{p.contactP1}</p>
+    </div>
+  </article>
+</BaseLayout>

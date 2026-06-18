@@ -11,6 +11,7 @@ export interface ExifTag {
 
 export interface PrivacyRisk {
   level: RiskLevel;
+  key: string;
   label: string;
   value: string;
 }
@@ -85,6 +86,7 @@ export async function readExif(file: File): Promise<ExifData> {
       if (info.level === 'high' || info.level === 'medium') {
         risks.push({
           level: info.level,
+          key,
           label: info.label,
           value: displayValue,
         });

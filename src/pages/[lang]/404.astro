@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTranslations, getSupportedLangs } from '../../i18n/utils';
+import type { Lang } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return getSupportedLangs()
+    .filter((l) => l !== 'en')
+    .map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const currentLang = lang as Lang;
+const t = getTranslations(currentLang);
+---
+
+<BaseLayout
+  title={`${t.notFound.title} — ${t.site.title}`}
+  description={t.notFound.desc}
+  lang={currentLang}
+  noIndex={true}
+>
+  <div class="max-w-2xl mx-auto px-4 py-16 sm:py-24 text-center">
+    <div class="mb-8">
+      <svg class="w-20 h-20 mx-auto text-[var(--color-text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+    </div>
+
+    <h1 class="text-3xl sm:text-4xl font-bold mb-4">{t.notFound.title}</h1>
+    <p class="text-lg text-[var(--color-text-muted)] mb-8 max-w-md mx-auto">
+      {t.notFound.desc}
+    </p>
+
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a
+        href={`/${currentLang}/`}
+        class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg font-medium hover:bg-[var(--color-primary-dark)] transition-colors no-underline min-h-[44px]"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+        </svg>
+        {t.notFound.tool}
+      </a>
+
+      <a
+        href={`/${currentLang}/what-is-exif-data`}
+        class="inline-flex items-center gap-2 px-6 py-3 border border-[var(--color-border)] rounded-lg font-medium text-[var(--color-text)] hover:bg-[var(--color-bg-alt)] transition-colors no-underline min-h-[44px]"
+      >
+        {t.notFound.learn}
+      </a>
+    </div>
+  </div>
+</BaseLayout>

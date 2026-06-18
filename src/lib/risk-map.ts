@@ -44,6 +44,42 @@ const RISK_MAP: Record<string, RiskInfo> = {
   WhiteBalance: { level: 'medium', label: 'White Balance', category: 'Device' },
   ThumbnailOffset: { level: 'medium', label: 'Thumbnail', category: 'Thumbnail' },
   ThumbnailLength: { level: 'medium', label: 'Thumbnail Size', category: 'Thumbnail' },
+  ExposureProgram: { level: 'medium', label: 'Exposure Program', category: 'Device' },
+  MeteringMode: { level: 'medium', label: 'Metering Mode', category: 'Device' },
+  LightSource: { level: 'medium', label: 'Light Source', category: 'Device' },
+  ExposureMode: { level: 'medium', label: 'Exposure Mode', category: 'Device' },
+  DigitalZoomRatio: { level: 'medium', label: 'Digital Zoom', category: 'Device' },
+  FocalLengthIn35mmFilm: { level: 'medium', label: 'Focal Length (35mm)', category: 'Device' },
+  FocalLengthIn35mmFormat: { level: 'medium', label: 'Focal Length (35mm)', category: 'Device' },
+  SceneCaptureType: { level: 'medium', label: 'Scene Capture Type', category: 'Device' },
+  SensingMethod: { level: 'medium', label: 'Sensing Method', category: 'Device' },
+  DeviceSettingDescription: { level: 'medium', label: 'Device Settings', category: 'Device' },
+  ExifVersion: { level: 'low', label: 'EXIF Version', category: 'Image' },
+  CompressedBitsPerPixel: { level: 'low', label: 'Compressed Bits', category: 'Image' },
+  ShutterSpeedValue: { level: 'low', label: 'Shutter Speed Value', category: 'Image' },
+  ApertureValue: { level: 'low', label: 'Aperture Value', category: 'Image' },
+  BrightnessValue: { level: 'low', label: 'Brightness Value', category: 'Image' },
+  ExposureCompensation: { level: 'low', label: 'Exposure Compensation', category: 'Image' },
+  MaxApertureValue: { level: 'low', label: 'Max Aperture', category: 'Image' },
+  SubSecTime: { level: 'low', label: 'Sub-second Time', category: 'Time' },
+  SubSecTimeOriginal: { level: 'low', label: 'Sub-second Original', category: 'Time' },
+  SubSecTimeDigitized: { level: 'low', label: 'Sub-second Digitized', category: 'Time' },
+  ComponentsConfiguration: { level: 'low', label: 'Components Config', category: 'Image' },
+  YCbCrPositioning: { level: 'low', label: 'YCbCr Positioning', category: 'Image' },
+  CustomRendered: { level: 'low', label: 'Custom Rendered', category: 'Image' },
+  GainControl: { level: 'low', label: 'Gain Control', category: 'Image' },
+  Contrast: { level: 'low', label: 'Contrast', category: 'Image' },
+  Saturation: { level: 'low', label: 'Saturation', category: 'Image' },
+  Sharpness: { level: 'low', label: 'Sharpness', category: 'Image' },
+  SubjectDistanceRange: { level: 'low', label: 'Subject Distance Range', category: 'Image' },
+  LensSpecification: { level: 'medium', label: 'Lens Specification', category: 'Device' },
+  FileSource: { level: 'low', label: 'File Source', category: 'Image' },
+  SceneType: { level: 'low', label: 'Scene Type', category: 'Image' },
+  GPSAltitudeRef: { level: 'high', label: 'GPS Altitude Ref', category: 'Location' },
+  GPSSpeedRef: { level: 'medium', label: 'GPS Speed Ref', category: 'Location' },
+  GPSDestBearingRef: { level: 'medium', label: 'GPS Bearing Ref', category: 'Location' },
+  GPSProcessingMethod: { level: 'high', label: 'GPS Processing Method', category: 'Location' },
+  GPSAreaInformation: { level: 'high', label: 'GPS Area Info', category: 'Location' },
 
   // Low risk — technical image properties (should be preserved)
   Orientation: { level: 'low', label: 'Orientation', category: 'Image' },
@@ -61,16 +97,7 @@ const RISK_MAP: Record<string, RiskInfo> = {
   StripByteCounts: { level: 'low', label: 'Strip Bytes', category: 'Image' },
 };
 
-export const PRESERVED_TAGS = new Set([
-  'Orientation',
-  'ColorSpace',
-]);
-
 export function getRiskInfo(tagName: string): RiskInfo {
   if (RISK_MAP[tagName]) return RISK_MAP[tagName];
   return { level: 'medium', label: tagName, category: 'Other' };
-}
-
-export function isHighRisk(tagName: string): boolean {
-  return getRiskInfo(tagName).level === 'high';
 }

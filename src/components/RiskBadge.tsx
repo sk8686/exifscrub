@@ -1,23 +1,26 @@
 import type { RiskLevel } from '../lib/risk-map';
+import type { Translations } from '../i18n/translations';
 
 interface RiskBadgeProps {
   level: RiskLevel;
   count?: number;
   compact?: boolean;
+  t?: Translations;
 }
 
-const STYLES: Record<RiskLevel, { bg: string; text: string; icon: string; label: string }> = {
-  high: { bg: 'bg-red-100', text: 'text-red-700', icon: '🔴', label: 'High risk' },
-  medium: { bg: 'bg-yellow-100', text: 'text-yellow-700', icon: '🟡', label: 'Medium risk' },
-  low: { bg: 'bg-green-100', text: 'text-green-700', icon: '🟢', label: 'Low risk' },
+const STYLES: Record<RiskLevel, { bg: string; text: string; icon: string; fallback: string }> = {
+  high: { bg: 'bg-red-100', text: 'text-red-700', icon: '🔴', fallback: 'High risk' },
+  medium: { bg: 'bg-yellow-100', text: 'text-yellow-700', icon: '🟡', fallback: 'Medium risk' },
+  low: { bg: 'bg-green-100', text: 'text-green-700', icon: '🟢', fallback: 'Low risk' },
 };
 
-export default function RiskBadge({ level, count, compact = false }: RiskBadgeProps) {
+export default function RiskBadge({ level, count, compact = false, t }: RiskBadgeProps) {
   const style = STYLES[level];
+  const label = t ? (t.riskLabels as Record<string, string>)[level] : style.fallback;
 
   if (compact) {
     return (
-      <span className={`inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded ${style.bg} ${style.text}`}>
+      <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded ${style.bg} ${style.text}`}>
         {style.icon} {count ?? ''}
       </span>
     );
@@ -25,7 +28,7 @@ export default function RiskBadge({ level, count, compact = false }: RiskBadgePr
 
   return (
     <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full ${style.bg} ${style.text}`}>
-      {style.icon} {style.label} {count !== undefined && `(${count})`}
+      {style.icon} {label} {count !== undefined && `(${count})`}
     </span>
   );
 }

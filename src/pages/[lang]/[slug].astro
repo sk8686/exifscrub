@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { getTranslations, getSupportedLangs } from '../../i18n/utils';
+import type { Lang } from '../../i18n/translations';
+
+export async function getStaticPaths() {
+  const allDocs = await getCollection('docs');
+  const langs = getSupportedLangs().filter((l) => l !== 'en');
+  const paths = [];
+  for (const lang of langs) {
+    // Only use docs that match this language (or English as fallback)
+    const langDocs = allDocs.filter((d) => d.data.lang === lang);
+    for (const doc of langDocs) {
+      paths.push({
+        params: { lang, slug: doc.data.slug },
+        props: { doc },
+      });
+    }
+    // Fallback: if no translation exists for a slug, use English version
+    const enDocs = allDocs.filter((d) => d.data.lang === 'en');
+    for (const enDoc of enDocs) {
+      const hasTranslation = langDocs.some((d) => d.data.slug === enDoc.data.slug);
+      if (!hasTranslation) {
+        paths.push({
+          params: { lang, slug: enDoc.data.slug },
+          props: { doc: enDoc },
+        });
+      }
+    }
+  }
+  return paths;
+}
+
+const { lang, slug } = Astro.params;
+const currentLang = lang as Lang;
+const { doc } = Astro.props;
+const { Content } = await render(doc);
+const t = getTranslations(currentLang);
+
+// Use same-language docs for navigation
+const allLangDocs = (await getCollection('docs')).filter((d) => d.data.lang === currentLang || d.data.lang === 'en');
+const allDocs = allLangDocs.sort((a, b) => a.data.order - b.data.order);
+
+// Deduplicate by slug (prefer translated over English)
+const uniqueDocs = new Map();
+for (const d of allDocs) {
+  if (!uniqueDocs.has(d.data.slug)) {
+    uniqueDocs.set(d.data.slug, d);
+  } else if (d.data.lang !== 'en') {
+    // Replace English with translation
+    uniqueDocs.set(d.data.slug, d);
+  }
+}
+const dedupedDocs = Array.from(uniqueDocs.values()).sort((a, b) => a.data.order - b.data.order);
+
+const currentIndex = dedupedDocs.findIndex((d) => d.data.slug === doc.data.slug);
+const prev = currentIndex > 0 ? dedupedDocs[currentIndex - 1] : null;
+const next = currentIndex < dedupedDocs.length - 1 ? dedupedDocs[currentIndex + 1] : null;
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') || '';
+---
+
+<BaseLayout
+  title={`${t.articleTitles[doc.data.slug] || doc.data.title} — ${t.site.title}`}
+  description={doc.data.description}
+  lang={currentLang}
+>
+  <article class="max-w-3xl mx-auto px-4 py-6 sm:py-8">
+    {/* Breadcrumb */}
+    <nav class="text-sm text-[var(--color-text-muted)] mb-4 flex items-center gap-1.5" aria-label="Breadcrumb">
+      <a href={`/${currentLang}/`} class="hover:text-[var(--color-primary)] transition-colors no-underline text-[var(--color-text-muted)]">{t.breadcrumb.home}</a>
+      <span>/</span>
+      <a href={`/${currentLang}/what-is-exif-data`} class="hover:text-[var(--color-primary)] transition-colors no-underline text-[var(--color-text-muted)]">{t.breadcrumb.learn}</a>
+      <span>/</span>
+      <span class="text-[var(--color-text)]">{t.articleTitles[doc.data.slug] || doc.data.title}</span>
+    </nav>
+
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-6">{t.articleTitles[doc.data.slug] || doc.data.title}</h1>
+    <div class="prose prose-slate prose-lg max-w-none
+      prose-headings:font-semibold prose-headings:text-[var(--color-text)]
+      prose-a:text-[var(--color-primary)] prose-a:no-underline hover:prose-a:underline
+      prose-code:text-[var(--color-primary)] prose-code:bg-blue-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
+      prose-table:border prose-table:border-[var(--color-border)]
+      prose-th:bg-[var(--color-bg-alt)] prose-th:px-3 prose-th:py-2
+      prose-td:px-3 prose-td:py-2 prose-td:border-t prose-td:border-[var(--color-border)]">
+      <Content />
+    </div>
+
+    <div class="mt-10 p-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl text-center shadow-sm">
+      <p class="text-xl font-bold mb-2">{t.cta.title}</p>
+      <p class="text-sm text-[var(--color-text-muted)] mb-5">{t.cta.desc}</p>
+      <a href={`/${currentLang}/`} class="inline-flex items-center gap-2 px-8 py-3.5 bg-[var(--color-primary)] text-white rounded-xl font-semibold text-base hover:bg-[var(--color-primary-dark)] transition-colors no-underline min-h-[44px] shadow-sm hover:shadow-md">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {t.cta.button}
+      </a>
+    </div>
+
+    <nav class="mt-8 flex flex-col sm:flex-row justify-between gap-3 text-sm">
+      {prev ? (
+        <a href={`/${currentLang}/${prev.data.slug}`} class="text-[var(--color-primary)] hover:underline no-underline px-2 py-2 min-h-[44px] flex items-center">
+          ← {t.articleTitles[prev.data.slug] || prev.data.title}
+        </a>
+      ) : <span />}
+      {next ? (
+        <a href={`/${currentLang}/${next.data.slug}`} class="text-[var(--color-primary)] hover:underline no-underline px-2 py-2 min-h-[44px] flex items-center sm:justify-end">
+          {t.articleTitles[next.data.slug] || next.data.title} →
+        </a>
+      ) : <span />}
+    </nav>
+
+    {/* All articles index */}
+    <div class="mt-10 p-6 bg-[var(--color-bg-alt)] rounded-xl border border-[var(--color-border)]">
+      <h3 class="text-sm font-semibold mb-3">{t.articles.title}</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {dedupedDocs.map((d) => (
+          <a
+            href={`/${currentLang}/${d.data.slug}`}
+            class:list={[
+              "text-sm no-underline px-3 py-2 rounded-lg transition-colors min-h-[44px] flex items-center",
+              d.data.slug === doc.data.slug
+                ? "bg-blue-50 text-[var(--color-primary)] font-medium"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:bg-blue-50/50"
+            ]}
+          >
+            {t.articleTitles[d.data.slug] || d.data.title}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    {/* BreadcrumbList schema */}
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": t.breadcrumb.home, "item": `${siteUrl}/${currentLang}/` },
+        { "@type": "ListItem", "position": 2, "name": t.breadcrumb.learn, "item": `${siteUrl}/${currentLang}/what-is-exif-data` },
+        { "@type": "ListItem", "position": 3, "name": t.articleTitles[doc.data.slug] || doc.data.title, "item": `${siteUrl}/${currentLang}/${doc.data.slug}` }
+      ]
+    })} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": t.articleTitles[doc.data.slug] || doc.data.title,
+      "description": doc.data.description,
+      "datePublished": "2025-01-01",
+      "author": { "@type": "Organization", "name": t.site.title },
+      "publisher": { "@type": "Organization", "name": t.site.title, "url": siteUrl },
+    })} />
+  </article>
+</BaseLayout>

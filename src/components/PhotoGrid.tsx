@@ -1,5 +1,8 @@
 import type { ExifData } from '../lib/exif-reader';
 import RiskBadge from './RiskBadge';
+import PrivacyScore, { computePrivacyGrade } from './PrivacyScore';
+import type { Translations } from '../i18n/translations';
+import { formatBytes } from '../lib/format';
 
 export interface PhotoItem {
   id: string;
@@ -12,15 +15,19 @@ export interface PhotoItem {
   cleanedSize: number | null;
   isProcessing: boolean;
   isCleaned: boolean;
+  error: string | null;
+  sha256: string | null;
 }
 
 interface PhotoGridProps {
   photos: PhotoItem[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  onRemove: (id: string) => void;
+  t: Translations;
 }
 
-export default function PhotoGrid({ photos, selectedId, onSelect }: PhotoGridProps) {
+export default function PhotoGrid({ photos, selectedId, onSelect, onRemove, t }: PhotoGridProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
       {photos.map((photo) => (
@@ -29,65 +36,86 @@ export default function PhotoGrid({ photos, selectedId, onSelect }: PhotoGridPro
           photo={photo}
           isSelected={photo.id === selectedId}
           onSelect={() => onSelect(photo.id)}
+          onRemove={() => onRemove(photo.id)}
+          t={t}
         />
       ))}
     </div>
   );
 }
 
-function PhotoCard({ photo, isSelected, onSelect }: { photo: PhotoItem; isSelected: boolean; onSelect: () => void }) {
+function PhotoCard({ photo, isSelected, onSelect, onRemove, t }: { photo: PhotoItem; isSelected: boolean; onSelect: () => void; onRemove: () => void; t: Translations }) {
   const riskSummary = photo.exifData
-    ? `${photo.exifData.riskCount.high + photo.exifData.riskCount.medium} risks`
+    ? `${photo.exifData.riskCount.high + photo.exifData.riskCount.medium} ${t.tool.privacyRisksFound}`
     : '';
 
   return (
-    <button
-      onClick={onSelect}
+    <div
       className={`
         relative rounded-lg overflow-hidden border-2 text-left transition-all w-full
         ${isSelected ? 'border-[var(--color-primary)] ring-2 ring-blue-200' : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'}
         ${photo.isProcessing ? 'opacity-60' : ''}
+        ${photo.error ? 'border-[var(--color-danger)]' : ''}
       `}
     >
-      <div className="aspect-square bg-gray-100">
-        <img
-          src={photo.thumbnail}
-          alt={photo.file.name}
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      {photo.exifData && !photo.isCleaned && (
-        <div className="absolute top-1.5 right-1.5">
-          <RiskBadge
-            level={photo.exifData.riskCount.high > 0 ? 'high' : 'medium'}
-            compact
-            count={photo.exifData.riskCount.high + photo.exifData.riskCount.medium}
+      <button
+        onClick={onSelect}
+        className="w-full text-left"
+      >
+        <div className="aspect-square bg-gray-100">
+          <img
+            src={photo.thumbnail}
+            alt={photo.file.name}
+            loading="lazy"
+            className="w-full h-full object-cover"
           />
         </div>
-      )}
 
-      {photo.isCleaned && (
-        <div className="absolute top-1.5 right-1.5 bg-[var(--color-success)] text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
-          ✓
-        </div>
-      )}
-
-      {photo.isProcessing && (
-        <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
-        </div>
-      )}
-
-      <div className="p-2">
-        <p className="text-xs text-[var(--color-text)] truncate">{photo.file.name}</p>
-        {riskSummary && !photo.isCleaned && (
-          <p className="text-xs text-[var(--color-danger)] mt-0.5">⚠️ {riskSummary}</p>
+        {photo.exifData && !photo.isCleaned && (
+          <div className="absolute top-1.5 right-1.5">
+            <PrivacyScore
+              grade={computePrivacyGrade(photo.exifData.riskCount.high, photo.exifData.riskCount.medium)}
+              t={t}
+              compact
+            />
+          </div>
         )}
+
         {photo.isCleaned && (
-          <p className="text-xs text-[var(--color-success)] mt-0.5">✓ Cleaned</p>
+          <div className="absolute top-1.5 right-1.5 bg-[var(--color-success)] text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+            ✓
+          </div>
         )}
-      </div>
-    </button>
+
+        {photo.isProcessing && (
+          <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+
+        <div className="p-2">
+          <p className="text-xs text-[var(--color-text)] truncate">{photo.file.name}</p>
+          <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{formatBytes(photo.originalSize)}</p>
+          {riskSummary && !photo.isCleaned && (
+            <p className="text-xs text-[var(--color-danger)] mt-0.5">⚠️ {riskSummary}</p>
+          )}
+          {photo.isCleaned && photo.cleanedSize !== null && (
+            <p className="text-xs text-[var(--color-success)] mt-0.5">✓ {t.tool.metadataRemoved.replace('✓ ', '')} ({formatBytes(photo.cleanedSize)})</p>
+          )}
+          {photo.error && (
+            <p className="text-xs text-[var(--color-danger)] mt-0.5 truncate">{photo.error}</p>
+          )}
+        </div>
+      </button>
+
+      {/* Remove button */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onRemove(); }}
+        className="absolute top-0 left-0 w-[44px] h-[44px] rounded-full bg-black/50 text-white flex items-center justify-center text-sm hover:bg-black/70 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+        aria-label={`${t.tool.deleteNow} ${photo.file.name}`}
+      >
+        ✕
+      </button>
+    </div>
   );
 }

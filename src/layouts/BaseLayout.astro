@@ -1,36 +1,68 @@
 ---
 import Header from '../components/Header.astro';
+import { getTranslations, getSupportedLangs, formatLangPath } from '../i18n/utils';
+import type { Lang } from '../i18n/translations';
+import '../styles/global.css';
 
 interface Props {
   title: string;
   description: string;
   canonicalURL?: string;
+  faqSchema?: { q: string; a: string }[];
+  howToSchema?: { name: string; steps: { name: string; text: string }[] };
+  lang?: string;
+  noIndex?: boolean;
 }
 
-const { title, description, canonicalURL } = Astro.props;
+const { title, description, canonicalURL, faqSchema, howToSchema, lang = 'en', noIndex = false } = Astro.props;
+const currentLang = lang as Lang;
+const t = getTranslations(currentLang);
 const currentPath = Astro.url.pathname;
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') || '';
+const resolvedCanonical = canonicalURL || (siteUrl ? `${siteUrl}${currentPath}` : '');
+
+// Generate hreflang tags for all supported languages
+const supportedLangs = getSupportedLangs();
+const pathWithoutLang = currentLang === 'en' ? currentPath : currentPath.replace(`/${currentLang}`, '') || '/';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://server.arcgisonline.com; connect-src 'self' https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://server.arcgisonline.com; font-src 'self'; frame-src 'none'; object-src 'none';" />
     <meta name="description" content={description} />
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href={canonicalURL} />
-    <meta name="robots" content="index, follow" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.svg" />
+    <link rel="preconnect" href="https://tile.openstreetmap.org" />
+    <link rel="preconnect" href="https://basemaps.cartocdn.com" />
+    <link rel="preconnect" href="https://server.arcgisonline.com" />
+    {resolvedCanonical && <link rel="canonical" href={resolvedCanonical} />}
+    {siteUrl && supportedLangs.map((l) => (
+      <link rel="alternate" hreflang={l} href={`${siteUrl}${formatLangPath(l, pathWithoutLang)}`} />
+    ))}
+    {siteUrl && <link rel="alternate" hreflang="x-default" href={`${siteUrl}${pathWithoutLang}`} />}
+    <meta name="robots" content={noIndex ? 'noindex, follow' : 'index, follow'} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:url" content={resolvedCanonical} />
+    <meta property="og:image" content={`${siteUrl}/og-image.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta property="og:locale" content={lang === 'zh' ? 'zh_CN' : lang === 'ja' ? 'ja_JP' : lang === 'ko' ? 'ko_KR' : lang === 'de' ? 'de_DE' : lang === 'fr' ? 'fr_FR' : lang === 'es' ? 'es_ES' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "EXIF Remover",
+      "name": t.site.title,
       "description": description,
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "Any",
@@ -42,21 +74,55 @@ const currentPath = Astro.url.pathname;
       "featureList": [
         "Remove EXIF metadata from photos",
         "Remove GPS location data",
-        "Remove camera information",
-        "Batch processing",
-        "100% local browser processing"
-      ]
+        "Remove camera information and serial numbers",
+        "Batch processing with ZIP download",
+        "No server upload — files never leave your browser",
+        "No cloud processing — 100% local browser processing",
+        "No data collection — zero tracking",
+        "Free with no signup required",
+        "Supports JPG, PNG, WebP, HEIC, GIF, AVIF, TIFF"
+      ],
+      "browserRequirements": "Requires JavaScript. Requires a modern browser with Canvas API support.",
+      "safetyConsideration": "All processing happens locally in the browser. No files are uploaded to any server."
     })} />
+    {faqSchema && (
+      <script type="application/ld+json" set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqSchema.map((item) => ({
+          "@type": "Question",
+          "name": item.q,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": item.a
+          }
+        }))
+      })} />
+    )}
+    {howToSchema && (
+      <script type="application/ld+json" set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": howToSchema.name,
+        "step": howToSchema.steps.map((step, i) => ({
+          "@type": "HowToStep",
+          "position": i + 1,
+          "name": step.name,
+          "text": step.text
+        }))
+      })} />
+    )}
   </head>
   <body class="min-h-screen flex flex-col bg-[var(--color-bg)]">
-    <Header currentPath={currentPath} />
+    <Header currentPath={currentPath} lang={lang} t={t} />
     <main class="flex-1">
       <slot />
     </main>
     <footer class="border-t border-[var(--color-border)] bg-[var(--color-bg-alt)] py-8 mt-12">
       <div class="max-w-5xl mx-auto px-4 text-center text-sm text-[var(--color-text-muted)]">
-        <p class="mb-2">🔒 Your files never leave your device. All processing happens locally in your browser.</p>
-        <p>&copy; {new Date().getFullYear()} EXIF Remover. Free &amp; open source.</p>
+        <p class="mb-2">{t.footer.privacy}</p>
+        <p class="mb-2"><a href={currentLang === 'en' ? '/privacy' : `/${currentLang}/privacy`} class="text-[var(--color-primary)] hover:underline no-underline min-h-[44px] inline-flex items-center">{t.footer.privacyLink}</a></p>
+        <p>&copy; {new Date().getFullYear()} EXIF Scrub.</p>
       </div>
     </footer>
   </body>
