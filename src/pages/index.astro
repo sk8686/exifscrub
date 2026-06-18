@@ -45,7 +45,7 @@ const allDocs = (await getCollection('docs'))
     </div>
 
     {/* Tool */}
-    <ExifRemover client:only="react" t={t} />
+    <ExifRemover client:load t={t} />
 
     {/* How It Works */}
     <div class="mt-12 sm:mt-16">

@@ -38,8 +38,6 @@ const pathWithoutLang = currentLang === 'en' ? currentPath : currentPath.replace
     <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.svg" />
     <link rel="preconnect" href="https://tile.openstreetmap.org" />
-    <link rel="preconnect" href="https://basemaps.cartocdn.com" />
-    <link rel="preconnect" href="https://server.arcgisonline.com" />
     {resolvedCanonical && <link rel="canonical" href={resolvedCanonical} />}
     {siteUrl && supportedLangs.map((l) => (
       <link rel="alternate" hreflang={l} href={`${siteUrl}${formatLangPath(l, pathWithoutLang)}`} />
