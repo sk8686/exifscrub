@@ -1,5 +1,5 @@
 ---
-title: "EXIF-Daten aus Fotos entfernen (Komplettanleitung 2025)"
+title: "EXIF-Daten aus Fotos entfernen (Komplettanleitung 2026)"
 description: "Schritt-für-Schritt-Anleitung zum Entfernen von EXIF-Metadaten aus Ihren Fotos. Erfahren Sie Sie, wie Sie GPS-Standort, Kamerainfo und Zeitstempel auf jedem Gerät entfernen."
 slug: "how-to-remove-exif-data"
 order: 2

@@ -1,5 +1,5 @@
 ---
-title: "如何去除照片中的EXIF数据（2025完整指南）"
+title: "如何去除照片中的EXIF数据（2026完整指南）"
 description: "分步指导如何从您的照片中移除EXIF元数据。了解如何在任何设备上从图像中删除GPS位置、相机信息和时间戳。"
 slug: "how-to-remove-exif-data"
 order: 2

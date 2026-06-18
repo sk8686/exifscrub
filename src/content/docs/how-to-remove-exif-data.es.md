@@ -1,5 +1,5 @@
 ---
-title: "Cómo eliminar datos EXIF de fotos (Guía completa 2025)"
+title: "Cómo eliminar datos EXIF de fotos (Guía completa 2026)"
 description: "Guía paso a paso para eliminar metadatos EXIF de sus fotos. Aprenda a eliminar la ubicación GPS, información de la cámara y marcas de tiempo de las imágenes en cualquier dispositivo."
 slug: "how-to-remove-exif-data"
 order: 2

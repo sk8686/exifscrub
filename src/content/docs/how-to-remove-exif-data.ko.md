@@ -1,5 +1,5 @@
 ---
-title: "사진에서 EXIF 데이터 제거 방법(2025 완전 가이드)"
+title: "사진에서 EXIF 데이터 제거 방법(2026 완전 가이드)"
 description: "사진에서 EXIF 메타데이터를 제거하는 단계별 가이드입니다. GPS 위치 정보, 카메라 정보, 타임스탬프를 이미지에서 제거하는 방법을 모든 기기에서 설명합니다."
 slug: "how-to-remove-exif-data"
 order: 2
